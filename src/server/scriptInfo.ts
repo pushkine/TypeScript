@@ -205,12 +205,11 @@ namespace ts.server {
         }
 
         private getFileTextAndSize(tempFileName?: string): { text: string, fileSize?: number } {
-            let text: string;
-            const fileName = tempFileName || this.info.fileName;
-            const getText = () => text === undefined ? (text = this.host.readFile(fileName) || "") : text;
+			const fileName = tempFileName || this.info.fileName;
+			const text = this.host.readFile(fileName) || "";
             // Only non typescript files have size limitation
             if (!hasTSFileExtension(this.info.fileName)) {
-                const fileSize = this.host.getFileSize ? this.host.getFileSize(fileName) : getText().length;
+                const fileSize = this.host.getFileSize ? this.host.getFileSize(fileName) : text.length;
                 if (fileSize > maxFileSize) {
                     Debug.assert(!!this.info.containingProjects.length);
                     const service = this.info.containingProjects[0].projectService;
@@ -219,7 +218,7 @@ namespace ts.server {
                     return { text: "", fileSize };
                 }
             }
-            return { text: getText() };
+            return { text };
         }
 
         private switchToScriptVersionCache(): ScriptVersionCache {
